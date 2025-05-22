@@ -66,7 +66,7 @@ int main(int argc, char **argv)
       continue;
     }
     std::cout << "Client connected\n";
-    send(client_socket, "HTTP/1.1 200 OK\r\n\r\n", 18, 0);
+    send(client_socket, "HTTP/1.1 200 OK\r\n\r", 18, 0);
 
     close(client_socket);
   }
