@@ -65,8 +65,10 @@ int main(int argc, char **argv)
       std::cerr << "Failed to accept connection\n";
       continue;
     }
+
     std::cout << "Client connected\n";
-    send(client_socket, "HTTP/1.1 200 OK\r\n\r", 18, 0);
+    const char *response = "HTTP/1.1 200 OK\r\n\r\n";
+    send(client_socket, response, strlen(response), 0);
 
     close(client_socket);
   }
