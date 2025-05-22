@@ -56,9 +56,20 @@ int main(int argc, char **argv)
 
   std::cout << "Waiting for a client to connect...\n";
 
-  // accept() blocks until a client connects
-  accept(server_fd, (struct sockaddr *)&client_addr, (socklen_t *)&client_addr_len);
-  std::cout << "Client connected\n";
+  while (true)
+  {
+    // accept() blocks until a client connects
+    int client_socket = accept(server_fd, (struct sockaddr *)&client_addr, (socklen_t *)&client_addr_len);
+    if (client_socket < 0)
+    {
+      std::cerr << "Failed to accept connection\n";
+      continue;
+    }
+    std::cout << "Client connected\n";
+    send(client_socket, "HTTP/1.1 200 OK\r\n\r\n", 18, 0);
+
+    close(client_socket);
+  }
 
   close(server_fd);
 

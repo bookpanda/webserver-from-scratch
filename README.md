@@ -6,4 +6,7 @@
 # another terminal
 # ping doesn't undertand ports (ICMP), nc is TCP/UDP
 nc -vz localhost 4221
+
+curl -v http://localhost:4221
+
 ```
