@@ -8,6 +8,26 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+char **split_string(const char *str, const char *delim)
+{
+  char *str_copy = strdup(str);
+  char *token;
+  char **result = nullptr;
+  size_t count = 0;
+
+  token = strtok(str_copy, delim);
+  while (token != nullptr)
+  {
+    result = (char **)realloc(result, sizeof(char *) * (count + 1));
+    result[count] = strdup(token);
+    count++;
+    token = strtok(nullptr, delim);
+  }
+
+  free(str_copy);
+  return result;
+}
+
 int main(int argc, char **argv)
 {
   // Flush after every std::cout / std::cerr
@@ -66,10 +86,35 @@ int main(int argc, char **argv)
       continue;
     }
 
-    std::cout << "Client connected\n";
-    const char *response = "HTTP/1.1 200 OK\r\n\r\n";
-    send(client_socket, response, strlen(response), 0);
+    // get client request
+    char buffer[1024];
+    ssize_t bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_received < 0)
+    {
+      std::cerr << "Failed to receive data\n";
+      close(client_socket);
+      continue;
+    }
+    buffer[bytes_received] = '\0'; // Null-terminate the received data
 
+    char **requestParts = split_string(buffer, "\r\n");
+    const char *requestLine = requestParts[0];
+    char **lineParts = split_string(requestLine, " ");
+    const char *method = lineParts[0];
+    const char *path = lineParts[1];
+
+    std::cout << "Received request:\n"
+              << buffer << "\n";
+    std::cout << "Method: " << method << "\n";
+    std::cout << "Path: " << path << "\n";
+
+    char *response = "HTTP/1.1 200 OK\r\n\r\n";
+    if (strcmp(path, "/") != 0)
+    {
+      response = "HTTP/1.1 404 Not Found\r\n\r\n";
+    }
+
+    send(client_socket, response, strlen(response), 0); // 0 = no flags (default)
     close(client_socket);
   }
 
