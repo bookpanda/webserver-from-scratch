@@ -4,10 +4,13 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <fstream>
+#include <sstream>
 
 const std::string HTTP_OK = "HTTP/1.1 200 OK\r\n";
 const std::string HTTP_NOT_FOUND = "HTTP/1.1 404 Not Found\r\n";
 const std::string CONTENT_TEXT = "Content-Type: text/plain\r\n";
+const std::string CONTENT_OCTET = "Content-Type: application/octet-stream\r\n";
 const std::string CONTENT_LENGTH = "Content-Length: ";
 
 std::string handleRequest(const std::string &method, const std::string &path, const std::map<std::string, std::string> &headers)
@@ -27,6 +30,21 @@ std::string handleRequest(const std::string &method, const std::string &path, co
     {
         std::string contentLength = CONTENT_LENGTH + std::to_string(headers.at("User-Agent").size());
         return std::format("{}{}{}\r\n\r\n{}", HTTP_OK, CONTENT_TEXT, contentLength, headers.at("User-Agent"));
+    }
+    else if (pathParts.size() > 1 && pathParts[1] == "files")
+    {
+        std::string filePath = pathParts[2];
+        std::ifstream file(filePath, std::ios::binary); // open file in binary mode
+        if (!file)
+        {
+            return HTTP_NOT_FOUND + "\r\n";
+        }
+        std::ostringstream oss;
+        oss << file.rdbuf(); // read file content into string stream
+        std::string fileContent = oss.str();
+
+        std::string contentLength = CONTENT_LENGTH + std::to_string(fileContent.size());
+        return std::format("{}{}{}\r\n\r\n{}", HTTP_OK, CONTENT_OCTET, contentLength, fileContent);
     }
 
     return HTTP_NOT_FOUND + "\r\n";
