@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include "utils/string_utils.hpp"
+#include "router/router.hpp"
 
 int main(int argc, char **argv)
 {
@@ -89,11 +90,7 @@ int main(int argc, char **argv)
     std::cout << "Method: " << method << "\n";
     std::cout << "Path: " << path << "\n";
 
-    std::string response = "HTTP/1.1 200 OK\r\n\r\n";
-    if (path != "/")
-    {
-      response = "HTTP/1.1 404 Not Found\r\n\r\n";
-    }
+    std::string response = handleRequest(method, path);
 
     send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
     close(client_socket);
