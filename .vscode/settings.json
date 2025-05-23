@@ -39,6 +39,21 @@
         "tuple": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "__split_buffer": "cpp",
+        "vector": "cpp",
+        "__hash_table": "cpp",
+        "__node_handle": "cpp",
+        "__tree": "cpp",
+        "array": "cpp",
+        "charconv": "cpp",
+        "complex": "cpp",
+        "deque": "cpp",
+        "map": "cpp",
+        "optional": "cpp",
+        "set": "cpp",
+        "sstream": "cpp",
+        "stack": "cpp",
+        "unordered_map": "cpp"
     }
 }

@@ -62,3 +62,16 @@ TEST_CASE("GET /foo returns 404 Not Found", "[http]")
     std::string response = send_http_request(request);
     REQUIRE(response.find("HTTP/1.1 404 Not Found") != std::string::npos);
 }
+
+TEST_CASE("GET /echo returns 200 OK", "[http]")
+{
+    std::string request =
+        "GET /echo/abc HTTP/1.1\r\n"
+        "Host: localhost\r\n"
+        "Connection: close\r\n"
+        "\r\n";
+
+    std::string response = send_http_request(request);
+    REQUIRE(response.find("HTTP/1.1 200 OK") != std::string::npos);
+    REQUIRE(response.find("abc") != std::string::npos);
+}
