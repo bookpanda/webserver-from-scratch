@@ -47,12 +47,15 @@ void handleClient(int client_socket)
     }
   }
 
+  std::string body = requestParts.back();
+
   std::cout << "Received request:\n"
             << buffer << "\n";
   std::cout << "Method: " << method << "\n";
   std::cout << "Path: " << path << "\n";
+  std::cout << "Body: " << body << "\n";
 
-  std::string response = handleRequest(method, path, headers);
+  std::string response = handleRequest(method, path, headers, body);
 
   send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
   close(client_socket);
