@@ -64,6 +64,19 @@ int main(int argc, char **argv)
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
 
+  for (int i = 1; i < argc - 1; ++i)
+  {
+    if (std::string(argv[i]) == "--directory")
+    {
+      const char *newDir = argv[i + 1];
+      if (chdir(newDir) != 0)
+      {
+        std::cerr << "Failed to change directory to " << newDir << "\n";
+        return 1;
+      }
+    }
+  }
+
   std::cout << "Logs from your program will appear here!\n";
 
   // socket(IPv4, TCP, default TCP protocol)
