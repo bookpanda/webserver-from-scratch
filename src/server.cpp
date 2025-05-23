@@ -89,13 +89,13 @@ int main(int argc, char **argv)
     std::cout << "Method: " << method << "\n";
     std::cout << "Path: " << path << "\n";
 
-    char *response = "HTTP/1.1 200 OK\r\n\r\n";
+    std::string response = "HTTP/1.1 200 OK\r\n\r\n";
     if (path != "/")
     {
       response = "HTTP/1.1 404 Not Found\r\n\r\n";
     }
 
-    send(client_socket, response, strlen(response), 0); // 0 = no flags (default)
+    send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
     close(client_socket);
   }
 
