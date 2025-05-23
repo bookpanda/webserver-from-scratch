@@ -1,8 +1,12 @@
 # Building HTTP server from scratch
 - `your_program.sh` builds the server and test binaries
-## Testing locally
+## Running locally
 ```sh
 ./your_program.sh
+
+# watch mode
+watchexec -w src -w include -w tests -r -- bash -c ./your_program.sh
+
 
 # another terminal
 # ping doesn't undertand ports (ICMP), nc is TCP/UDP
