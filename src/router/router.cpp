@@ -22,7 +22,6 @@ std::string handleRequest(const std::string &method, const std::string &path, co
     {
         int contentLength = headers.at("User-Agent").size();
         return std::format("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {}\r\n\r\n{}", contentLength, headers.at("User-Agent"));
-        return "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"message\": \"Hello, JSON!\"}";
     }
 
     return "HTTP/1.1 404 Not Found\r\n\r\n";

@@ -93,11 +93,11 @@ int main(int argc, char **argv)
       if (headerLine.empty())
         continue;
 
-      size_t colonPos = headerLine.find(':');
-      if (colonPos != std::string::npos)
+      std::vector<std::string> header = splitString(headerLine, ": ");
+      if (header.size() == 2)
       {
-        std::string headerName = headerLine.substr(0, colonPos);
-        std::string headerValue = headerLine.substr(colonPos + 1);
+        const std::string &headerName = header[0];
+        const std::string &headerValue = header[1];
         headers[headerName] = headerValue;
       }
     }

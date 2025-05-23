@@ -88,4 +88,5 @@ TEST_CASE("GET /user-agent returns 200 OK", "[http]")
     std::string response = send_http_request(request);
     REQUIRE(response.find("HTTP/1.1 200 OK") != std::string::npos);
     REQUIRE(response.find("TestClient/1.0") != std::string::npos);
+    REQUIRE(response.find("Content-Length: 14") != std::string::npos);
 }
