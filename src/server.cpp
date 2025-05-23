@@ -7,26 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-
-char **split_string(const char *str, const char *delim)
-{
-  char *str_copy = strdup(str);
-  char *token;
-  char **result = nullptr;
-  size_t count = 0;
-
-  token = strtok(str_copy, delim);
-  while (token != nullptr)
-  {
-    result = (char **)realloc(result, sizeof(char *) * (count + 1));
-    result[count] = strdup(token);
-    count++;
-    token = strtok(nullptr, delim);
-  }
-
-  free(str_copy);
-  return result;
-}
+#include "utils/string_utils.hpp"
 
 int main(int argc, char **argv)
 {
@@ -97,11 +78,11 @@ int main(int argc, char **argv)
     }
     buffer[bytes_received] = '\0'; // Null-terminate the received data
 
-    char **requestParts = split_string(buffer, "\r\n");
-    const char *requestLine = requestParts[0];
-    char **lineParts = split_string(requestLine, " ");
-    const char *method = lineParts[0];
-    const char *path = lineParts[1];
+    std::vector<std::string> requestParts = splitString(buffer, "\r\n");
+    const std::string requestLine = requestParts[0];
+    std::vector<std::string> lineParts = splitString(requestLine, " ");
+    const std::string method = lineParts[0];
+    const std::string path = lineParts[1];
 
     std::cout << "Received request:\n"
               << buffer << "\n";
@@ -109,7 +90,7 @@ int main(int argc, char **argv)
     std::cout << "Path: " << path << "\n";
 
     char *response = "HTTP/1.1 200 OK\r\n\r\n";
-    if (strcmp(path, "/") != 0)
+    if (path != "/")
     {
       response = "HTTP/1.1 404 Not Found\r\n\r\n";
     }
