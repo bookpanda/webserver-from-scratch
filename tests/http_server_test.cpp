@@ -75,3 +75,17 @@ TEST_CASE("GET /echo returns 200 OK", "[http]")
     REQUIRE(response.find("HTTP/1.1 200 OK") != std::string::npos);
     REQUIRE(response.find("abc") != std::string::npos);
 }
+
+TEST_CASE("GET /user-agent returns 200 OK", "[http]")
+{
+    std::string request =
+        "GET /user-agent HTTP/1.1\r\n"
+        "Host: localhost\r\n"
+        "User-Agent: TestClient/1.0\r\n"
+        "Connection: close\r\n"
+        "\r\n";
+
+    std::string response = send_http_request(request);
+    REQUIRE(response.find("HTTP/1.1 200 OK") != std::string::npos);
+    REQUIRE(response.find("TestClient/1.0") != std::string::npos);
+}

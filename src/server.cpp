@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include "utils/string_utils.hpp"
 #include "router/router.hpp"
+#include <map>
 
 int main(int argc, char **argv)
 {
@@ -85,12 +86,28 @@ int main(int argc, char **argv)
     const std::string method = lineParts[0];
     const std::string path = lineParts[1];
 
+    std::map<std::string, std::string> headers;
+    for (size_t i = 1; i < requestParts.size(); ++i)
+    {
+      const std::string &headerLine = requestParts[i];
+      if (headerLine.empty())
+        continue;
+
+      size_t colonPos = headerLine.find(':');
+      if (colonPos != std::string::npos)
+      {
+        std::string headerName = headerLine.substr(0, colonPos);
+        std::string headerValue = headerLine.substr(colonPos + 1);
+        headers[headerName] = headerValue;
+      }
+    }
+
     std::cout << "Received request:\n"
               << buffer << "\n";
     std::cout << "Method: " << method << "\n";
     std::cout << "Path: " << path << "\n";
 
-    std::string response = handleRequest(method, path);
+    std::string response = handleRequest(method, path, headers);
 
     send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
     close(client_socket);
