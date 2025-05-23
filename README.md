@@ -19,4 +19,11 @@ curl -v http://localhost:4221
 ## Unit tests
 ```sh
 ./build/test_string_utils
+./build/http_server_test
+```
+
+## Tips
+```sh
+# generate tree view of the project
+tree -I "build|vcpkg_installed"
 ```

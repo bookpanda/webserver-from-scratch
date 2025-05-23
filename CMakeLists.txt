@@ -9,13 +9,21 @@ find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 
-
+# Find all .cpp and .hpp files recursively in these folders and store them in SOURCE_FILES
 file(GLOB_RECURSE SOURCE_FILES src/*.cpp include/*.hpp)
 add_executable(server ${SOURCE_FILES})
 target_include_directories(server PRIVATE include)
 target_link_libraries(server PRIVATE Threads::Threads ZLIB::ZLIB)
 
-file(GLOB_RECURSE TEST_SOURCES tests/*.cpp)
-add_executable(test_string_utils ${TEST_SOURCES} src/utils/string_utils.cpp)
+# Test for string_utils
+add_executable(test_string_utils
+  tests/string_utils_test.cpp
+  src/utils/string_utils.cpp
+)
 target_include_directories(test_string_utils PRIVATE include)
 target_link_libraries(test_string_utils PRIVATE Catch2::Catch2WithMain)
+
+# Test for http server
+add_executable(test_http_server tests/http_server_test.cpp)
+target_include_directories(test_http_server PRIVATE include)
+target_link_libraries(test_http_server PRIVATE Catch2::Catch2WithMain)
