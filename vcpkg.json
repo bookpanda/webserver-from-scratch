@@ -1,6 +1,7 @@
 {
     "dependencies": [
         "pthreads",
-        "zlib"
+        "zlib",
+        "catch2"
     ]
 }

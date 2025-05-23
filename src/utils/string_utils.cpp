@@ -9,6 +9,9 @@ std::vector<std::string> splitString(const std::string &str, const std::string &
         tokens.push_back(str.substr(start, end - start));
         start = end + delim.length();
     }
-    tokens.push_back(str.substr(start));
+
+    if (start < str.length())
+        tokens.push_back(str.substr(start));
+
     return tokens;
 }
