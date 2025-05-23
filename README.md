@@ -14,6 +14,7 @@ nc -vz localhost 4221
 
 curl -v http://localhost:4221
 
+oha http://localhost:4221
 ```
 
 ## Unit tests

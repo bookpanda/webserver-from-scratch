@@ -10,6 +10,53 @@
 #include "utils/string_utils.hpp"
 #include "router/router.hpp"
 #include <map>
+#include <thread>
+
+void handleClient(int client_socket)
+{
+  // get client request
+  char buffer[1024];
+  ssize_t bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+  if (bytes_received < 0)
+  {
+    std::cerr << "Failed to receive data\n";
+    close(client_socket);
+    return;
+  }
+  buffer[bytes_received] = '\0'; // Null-terminate the received data
+
+  std::vector<std::string> requestParts = splitString(buffer, "\r\n");
+  const std::string requestLine = requestParts[0];
+  std::vector<std::string> lineParts = splitString(requestLine, " ");
+  const std::string method = lineParts[0];
+  const std::string path = lineParts[1];
+
+  std::map<std::string, std::string> headers;
+  for (size_t i = 1; i < requestParts.size(); ++i)
+  {
+    const std::string &headerLine = requestParts[i];
+    if (headerLine.empty())
+      continue;
+
+    std::vector<std::string> header = splitString(headerLine, ": ");
+    if (header.size() == 2)
+    {
+      const std::string &headerName = header[0];
+      const std::string &headerValue = header[1];
+      headers[headerName] = headerValue;
+    }
+  }
+
+  std::cout << "Received request:\n"
+            << buffer << "\n";
+  std::cout << "Method: " << method << "\n";
+  std::cout << "Path: " << path << "\n";
+
+  std::string response = handleRequest(method, path, headers);
+
+  send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
+  close(client_socket);
+}
 
 int main(int argc, char **argv)
 {
@@ -69,48 +116,7 @@ int main(int argc, char **argv)
       continue;
     }
 
-    // get client request
-    char buffer[1024];
-    ssize_t bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
-    if (bytes_received < 0)
-    {
-      std::cerr << "Failed to receive data\n";
-      close(client_socket);
-      continue;
-    }
-    buffer[bytes_received] = '\0'; // Null-terminate the received data
-
-    std::vector<std::string> requestParts = splitString(buffer, "\r\n");
-    const std::string requestLine = requestParts[0];
-    std::vector<std::string> lineParts = splitString(requestLine, " ");
-    const std::string method = lineParts[0];
-    const std::string path = lineParts[1];
-
-    std::map<std::string, std::string> headers;
-    for (size_t i = 1; i < requestParts.size(); ++i)
-    {
-      const std::string &headerLine = requestParts[i];
-      if (headerLine.empty())
-        continue;
-
-      std::vector<std::string> header = splitString(headerLine, ": ");
-      if (header.size() == 2)
-      {
-        const std::string &headerName = header[0];
-        const std::string &headerValue = header[1];
-        headers[headerName] = headerValue;
-      }
-    }
-
-    std::cout << "Received request:\n"
-              << buffer << "\n";
-    std::cout << "Method: " << method << "\n";
-    std::cout << "Path: " << path << "\n";
-
-    std::string response = handleRequest(method, path, headers);
-
-    send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
-    close(client_socket);
+    std::thread(handleClient, client_socket).detach();
   }
 
   close(server_fd);
