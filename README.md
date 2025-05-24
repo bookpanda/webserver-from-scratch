@@ -17,6 +17,8 @@ curl -v http://localhost:4221
 oha http://localhost:4221
 
 ./your_program.sh --directory ./tmp/
+
+curl -v -H "Accept-Encoding: gzip" http://localhost:4221/echo/abc | hexdump -C
 ```
 
 ## Unit tests
