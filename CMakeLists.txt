@@ -21,7 +21,7 @@ add_executable(test_string_utils
   src/utils/string_utils.cpp
 )
 target_include_directories(test_string_utils PRIVATE include)
-target_link_libraries(test_string_utils PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_string_utils PRIVATE Catch2::Catch2WithMain ZLIB::ZLIB)
 
 # Test for http server
 add_executable(test_http_server tests/http_server_test.cpp)

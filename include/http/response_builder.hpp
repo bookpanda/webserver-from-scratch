@@ -39,19 +39,23 @@ public:
 
     std::string build() const
     {
-        std::string lengthHeader = "Content-Length: " + std::to_string(body.size()) + "\r\n";
-        std::string response = http::to_string(status) + http::to_string(contentType) + lengthHeader;
+        std::string compressedBody = body;
+        std::string encodingHeader = "";
 
         std::vector<std::string> encodings = splitString(contentEncoding, ", ");
         for (const auto &encoding : encodings)
         {
             if (encoding == "gzip")
             {
-                response += "Content-Encoding: gzip\r\n";
+                compressedBody = gzipCompress(body);
+                encodingHeader = "Content-Encoding: gzip\r\n";
                 break;
             }
         }
 
-        return response + "\r\n" + body;
+        std::string lengthHeader = "Content-Length: " + std::to_string(compressedBody.size()) + "\r\n";
+        std::string response = http::to_string(status) + http::to_string(contentType) + lengthHeader + encodingHeader;
+
+        return response + "\r\n" + compressedBody;
     }
 };
