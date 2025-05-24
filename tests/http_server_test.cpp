@@ -105,6 +105,20 @@ TEST_CASE("GET /echo Accept-Encoding: gzip returns 200 OK with Content-Encoding:
     REQUIRE(response.find("Content-Encoding: gzip") != std::string::npos);
 }
 
+TEST_CASE("GET /echo Accept-Encoding: invalid-encoding-1, gzip returns 200 OK with Content-Encoding: gzip", "[http]")
+{
+    std::string request =
+        "GET /echo/abc HTTP/1.1\r\n"
+        "Host: localhost\r\n"
+        "Accept-Encoding: invalid-encoding-1, gzip\r\n"
+        "Connection: close\r\n"
+        "\r\n";
+
+    std::string response = send_http_request(request);
+    REQUIRE(response.find("HTTP/1.1 200 OK") != std::string::npos);
+    REQUIRE(response.find("Content-Encoding: gzip") != std::string::npos);
+}
+
 TEST_CASE("GET /echo Accept-Encoding: invalid-encoding returns 200 OK w/o Content-Encoding", "[http]")
 {
     std::string request =

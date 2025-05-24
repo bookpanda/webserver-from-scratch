@@ -3,7 +3,7 @@
 #include <string>
 #include <format>
 #include "constants.hpp"
-
+#include "utils/string_utils.hpp"
 class HttpResponseBuilder
 {
 private:
@@ -42,9 +42,14 @@ public:
         std::string lengthHeader = "Content-Length: " + std::to_string(body.size()) + "\r\n";
         std::string response = http::to_string(status) + http::to_string(contentType) + lengthHeader;
 
-        if (contentEncoding == "gzip")
+        std::vector<std::string> encodings = splitString(contentEncoding, ", ");
+        for (const auto &encoding : encodings)
         {
-            response += "Content-Encoding: " + contentEncoding + "\r\n";
+            if (encoding == "gzip")
+            {
+                response += "Content-Encoding: gzip\r\n";
+                break;
+            }
         }
 
         return response + "\r\n" + body;
