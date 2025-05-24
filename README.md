@@ -22,7 +22,7 @@ oha http://localhost:4221
 ## Unit tests
 ```sh
 ./build/test_string_utils
-./build/http_server_test
+./build/test_http_server
 ```
 
 ## Tips
