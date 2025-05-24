@@ -52,7 +52,10 @@ std::string handleRequest(const std::string &method, const std::string &path, co
             oss << file.rdbuf(); // read file content into string stream
             std::string fileContent = oss.str();
 
-            std::string response = builder.setBody(fileContent).build();
+            std::string response = builder
+                                       .setBody(fileContent)
+                                       .setContentType(http::ContentType::Octet)
+                                       .build();
             return response;
         }
         else if (method == "POST")
