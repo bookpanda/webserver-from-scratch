@@ -26,8 +26,10 @@ std::string handleRequest(const std::string &method, const std::string &path, co
     const std::vector<std::string> pathParts = splitString(path, "/");
     if (pathParts.size() > 1 && pathParts[1] == "echo")
     {
-        std::string response = builder.setBody(pathParts[2]).build();
-        return response;
+        if (pathParts.size() >= 3)
+            builder.setBody(pathParts[2]).build();
+
+        return builder.build();
     }
     else if (pathParts.size() > 1 && pathParts[1] == "user-agent")
     {

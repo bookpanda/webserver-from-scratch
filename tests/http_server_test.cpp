@@ -94,7 +94,7 @@ TEST_CASE("GET /user-agent returns 200 OK", "[http]")
 TEST_CASE("GET /echo Accept-Encoding: gzip returns 200 OK with Content-Encoding: gzip", "[http]")
 {
     std::string request =
-        "GET /echo HTTP/1.1\r\n"
+        "GET /echo/abc HTTP/1.1\r\n"
         "Host: localhost\r\n"
         "Accept-Encoding: gzip\r\n"
         "Connection: close\r\n"
@@ -108,7 +108,7 @@ TEST_CASE("GET /echo Accept-Encoding: gzip returns 200 OK with Content-Encoding:
 TEST_CASE("GET /echo Accept-Encoding: invalid-encoding returns 200 OK w/o Content-Encoding", "[http]")
 {
     std::string request =
-        "GET /echo HTTP/1.1\r\n"
+        "GET /echo/abc HTTP/1.1\r\n"
         "Host: localhost\r\n"
         "Accept-Encoding: invalid-encoding\r\n"
         "Connection: close\r\n"
