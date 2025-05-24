@@ -9,6 +9,7 @@ class HttpResponseBuilder
 private:
     http::Status status = http::Status::OK;
     http::ContentType contentType = http::ContentType::Text;
+    std::string contentEncoding = "";
     std::string body = "";
 
 public:
@@ -30,9 +31,22 @@ public:
         return *this;
     }
 
+    HttpResponseBuilder &setContentEncoding(const std::string &encoding)
+    {
+        contentEncoding = encoding;
+        return *this;
+    }
+
     std::string build() const
     {
         std::string lengthHeader = "Content-Length: " + std::to_string(body.size()) + "\r\n";
-        return http::to_string(status) + http::to_string(contentType) + lengthHeader + "\r\n" + body;
+        std::string response = http::to_string(status) + http::to_string(contentType) + lengthHeader;
+
+        if (contentEncoding == "gzip")
+        {
+            response += "Content-Encoding: " + contentEncoding + "\r\n";
+        }
+
+        return response + "\r\n" + body;
     }
 };

@@ -11,6 +11,11 @@
 std::string handleRequest(const std::string &method, const std::string &path, const std::map<std::string, std::string> &headers, const std::string &body)
 {
     HttpResponseBuilder builder;
+    auto it = headers.find("Accept-Encoding");
+    if (it != headers.end())
+    {
+        builder.setContentEncoding(it->second);
+    }
 
     if (method == "GET" && path == "/")
     {
