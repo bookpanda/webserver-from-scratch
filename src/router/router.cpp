@@ -17,6 +17,12 @@ std::string handleRequest(const std::string &method, const std::string &path, co
         builder.setContentEncoding(it->second);
     }
 
+    it = headers.find("Connection");
+    if (it != headers.end() && it->second == "close")
+    {
+        builder.setConnection("close");
+    }
+
     if (method == "GET" && path == "/")
     {
         std::string response = builder.build();

@@ -10,6 +10,7 @@ private:
     http::Status status = http::Status::OK;
     http::ContentType contentType = http::ContentType::Text;
     std::string contentEncoding = "";
+    std::string connection = "";
     std::string body = "";
 
 public:
@@ -22,6 +23,12 @@ public:
     HttpResponseBuilder &setContentType(const http::ContentType &newContentType)
     {
         contentType = newContentType;
+        return *this;
+    }
+
+    HttpResponseBuilder &setConnection(const std::string &conn)
+    {
+        connection = conn;
         return *this;
     }
 
@@ -54,7 +61,9 @@ public:
         }
 
         std::string lengthHeader = "Content-Length: " + std::to_string(compressedBody.size()) + "\r\n";
-        std::string response = http::to_string(status) + http::to_string(contentType) + lengthHeader + encodingHeader;
+        std::string connectionHeader = connection.empty() ? "" : "Connection: " + connection + "\r\n";
+        std::string response = http::to_string(status) + http::to_string(contentType) +
+                               lengthHeader + encodingHeader + connectionHeader;
 
         return response + "\r\n" + compressedBody;
     }
