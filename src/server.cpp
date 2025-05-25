@@ -16,47 +16,64 @@ void handleClient(int client_socket)
 {
   // get client request
   char buffer[1024];
-  ssize_t bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
-  if (bytes_received < 0)
+  while (true)
   {
-    std::cerr << "Failed to receive data\n";
-    close(client_socket);
-    return;
-  }
-  buffer[bytes_received] = '\0'; // Null-terminate the received data
+    ssize_t bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_received <= 0)
+    {
+      std::cerr << "Failed to receive data\n";
+      break;
+    }
+    buffer[bytes_received] = '\0'; // Null-terminate the received data
 
-  std::vector<std::string> requestParts = splitString(buffer, "\r\n");
-  const std::string requestLine = requestParts[0];
-  std::vector<std::string> lineParts = splitString(requestLine, " ");
-  const std::string method = lineParts[0];
-  const std::string path = lineParts[1];
-
-  std::map<std::string, std::string> headers;
-  for (size_t i = 1; i < requestParts.size(); ++i)
-  {
-    const std::string &headerLine = requestParts[i];
-    if (headerLine.empty())
+    std::vector<std::string> requestParts = splitString(buffer, "\r\n");
+    if (requestParts.empty())
       continue;
 
-    std::vector<std::string> header = splitString(headerLine, ": ");
-    if (header.size() == 2)
+    const std::string requestLine = requestParts[0];
+    std::vector<std::string> lineParts = splitString(requestLine, " ");
+    if (lineParts.size() < 2)
+      continue;
+
+    const std::string method = lineParts[0];
+    const std::string path = lineParts[1];
+
+    std::map<std::string, std::string> headers;
+    for (size_t i = 1; i < requestParts.size(); ++i)
     {
-      const std::string &headerName = header[0];
-      const std::string &headerValue = header[1];
-      headers[headerName] = headerValue;
+      const std::string &headerLine = requestParts[i];
+      if (headerLine.empty())
+        break;
+
+      std::vector<std::string> header = splitString(headerLine, ": ");
+      if (header.size() == 2)
+      {
+        headers[header[0]] = header[1];
+      }
     }
+
+    std::string body = requestParts.back();
+
+    std::cout << "Received request:\n"
+              << buffer << "-------------------------------\n";
+
+    std::string response = handleRequest(method, path, headers, body);
+    std::cout << "Sending response:\n"
+              << response << "\n";
+
+    send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
+
+    auto it = headers.find("Connection");
+    if (it != headers.end() && it->second == "close")
+    {
+      std::cout << "\nClosing connection as per request\n";
+      std::cout << "================================\n";
+      break;
+    }
+
+    std::cout << "================================\n";
   }
 
-  std::string body = requestParts.back();
-
-  std::cout << "Received request:\n"
-            << buffer << "-------------------------------\n";
-
-  std::string response = handleRequest(method, path, headers, body);
-  std::cout << "Sending response:\n"
-            << response << "\n==============================\n";
-
-  send(client_socket, response.c_str(), response.size(), 0); // 0 = no flags (default)
   close(client_socket);
 }
 

@@ -19,6 +19,8 @@ oha http://localhost:4221
 ./your_program.sh --directory ./tmp/
 
 curl -v -H "Accept-Encoding: gzip" http://localhost:4221/echo/abc | hexdump -C
+
+curl --http1.1 -v http://localhost:4221/echo/banana --next http://localhost:4221/user-agent -H "User-Agent: blueberry/apple-blueberry"
 ```
 
 ## Unit tests
